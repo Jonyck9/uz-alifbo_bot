@@ -4,6 +4,7 @@ import os
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiohttp import web
 from dotenv import load_dotenv
 from converter import convert
 
@@ -45,10 +46,22 @@ async def translate(message: Message):
         await message.answer('Текст слишком длинный. Отправьте его частями.');return
     await message.answer(result)
 
+async def health(request):
+    return web.Response(text='ok')
+
+async def start_health_server():
+    app = web.Application()
+    app.router.add_get('/', health)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', int(os.getenv('PORT','8080')))
+    await site.start()
+
 async def main():
     if not TOKEN or TOKEN=='PASTE_YOUR_BOTFATHER_TOKEN_HERE':
         raise RuntimeError('Добавьте BOT_TOKEN в файл .env')
     logging.basicConfig(level=logging.INFO)
+    await start_health_server()
     await dp.start_polling(Bot(TOKEN))
 
 if __name__=='__main__':

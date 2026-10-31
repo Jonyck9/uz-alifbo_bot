@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: uz-alifbo-bot
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /
+    envVars:
+      - key: BOT_TOKEN
+        sync: false

@@ -20,4 +20,24 @@
 
 Токен не хранится в репозитории: `.env` исключён через `.gitignore`, на Render он задаётся только переменной окружения.
 
+## Деплой на Vercel
+
+Vercel не может поддерживать постоянный `long polling`, поэтому для него бот использует Telegram webhook.
+
+1. Загрузите проект в GitHub и импортируйте репозиторий в [Vercel](https://vercel.com/new). Framework Preset оставьте `Other`, Root Directory — `./`.
+2. В **Settings → Environment Variables** добавьте `BOT_TOKEN` и `WEBHOOK_SECRET`. Для второго значения используйте длинную случайную строку. Добавьте переменные для окружения **Production**.
+3. Запустите Deploy. После него скопируйте домен проекта, например `https://uz-alifbo-bot.vercel.app`.
+4. В PowerShell зарегистрируйте webhook, подставив реальные значения:
+
+```powershell
+$token = 'BOT_TOKEN'
+$secret = 'WEBHOOK_SECRET'
+$url = 'https://uz-alifbo-bot.vercel.app/api/webhook'
+Invoke-RestMethod "https://api.telegram.org/bot$token/setWebhook" -Method Post -Body @{ url = $url; secret_token = $secret }
+```
+
+5. Откройте `https://<ваш-домен>/api/webhook`: ответ `{"status":"ok"}` означает, что функция доступна. Напишите боту `/start`.
+
+При смене домена Vercel снова выполните команду из шага 4 с новым URL. Локальный запуск через `py bot.py` продолжает работать в режиме polling.
+
 **Важно:** это MVP. Преобразование кириллицы в латиницу и обратно не полностью учитывает контекст (Е/е, Ё/ё, Ц/ц, апострофы, имена и заимствования). Перед использованием для официальных документов нужна проверка правил и тестирование. Набор Ö/Ğ/Ş/Ç задан как выбранный для проекта вариант, без утверждения его юридического статуса.

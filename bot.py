@@ -36,8 +36,8 @@ async def choose(call: CallbackQuery):
     if idx not in range(len(MODES)):
         await call.answer('Неверный режим'); return
     choices[call.from_user.id]=idx
-    await call.answer('Направление выбрано')
     await call.message.answer(f'✅ {MODES[idx][2]}\nОтправьте текст, Word (.docx) или Excel (.xlsx). Для смены направления: /start')
+    await call.answer('Направление выбрано')
 
 @dp.message(F.document)
 async def translate_file(message: Message):
